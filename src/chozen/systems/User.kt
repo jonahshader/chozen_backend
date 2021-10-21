@@ -10,7 +10,7 @@ class User(socket: Socket) {
 
     fun pollInput(serverManager: ServerManager) {
         inputStreamReader.forEachLine {
-            var parts = it.split(' ')
+            val parts = it.split(' ')
             when (parts[0]) {
                 "request_create_room" -> TODO("create room")
                 "request_join_room" -> TODO("join room")
