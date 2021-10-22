@@ -13,7 +13,7 @@ class ServerManager(port: Int) {
 
     private val userMoveQueue = mutableListOf<User>()
 
-    init {
+    fun start() {
         // run a thread for gathering new user connections
         thread {
             while (true) {
