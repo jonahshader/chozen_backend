@@ -1,17 +1,21 @@
 package chozen.systems
 
+import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.PrintWriter
 import java.net.Socket
 
 class User(val socket: Socket) {
-    private val inputStreamReader = InputStreamReader(socket.getInputStream())
+    private val inputStreamReader = socket.getInputStream()!!
+    private val bufferedReader = BufferedReader(InputStreamReader(socket.getInputStream()))
     private val outputWriter = PrintWriter(socket.getOutputStream(), true)
+    var inRoom = false
 
     fun pollRoomCommands(room: Room) {
-        inputStreamReader.forEachLine {
-            println("received $it")
-            val parts = it.split(' ')
+        if (inputStreamReader.available() > 0) {
+            val line = bufferedReader.readLine()
+            println("pollRoomCommands received $line")
+            val parts = line.split(' ')
             when (parts[0]) {
                 "close_room" -> room.closeRoom()
                 "add_option" -> room.addOption(parts[1])
@@ -23,9 +27,10 @@ class User(val socket: Socket) {
     }
 
     fun pollCreateJoin(serverManager: ServerManager) {
-        inputStreamReader.forEachLine {
-            println("received $it")
-            val parts = it.split(' ')
+        if (inputStreamReader.available() > 0) {
+            val line = bufferedReader.readLine()
+            println("pollCreateJoin received $line")
+            val parts = line.split(' ')
             when (parts[0]) {
                 "request_create_room" -> serverManager.createRoom(this)
                 "request_join_room" -> serverManager.moveUserIntoRoom(this, parts[1])

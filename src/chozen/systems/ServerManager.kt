@@ -11,8 +11,6 @@ class ServerManager(port: Int) {
     private val usersNotInRoom = mutableListOf<User>()
     private val rooms = ConcurrentHashMap<String, Room>()
 
-    private val userMoveQueue = mutableListOf<User>()
-
     fun start() {
         // run a thread for gathering new user connections
         thread {
@@ -30,8 +28,7 @@ class ServerManager(port: Int) {
         while (true) {
             usersNotInRoomLock.lock()
             usersNotInRoom.forEach { it.pollCreateJoin(this) }
-            usersNotInRoom.removeAll(userMoveQueue)
-            userMoveQueue.clear()
+            usersNotInRoom.removeIf { it.inRoom }
             usersNotInRoomLock.unlock()
 
             val roomsToRemove = mutableListOf<String>()
@@ -43,7 +40,10 @@ class ServerManager(port: Int) {
                 }
             }
             // remove done rooms
-            roomsToRemove.forEach { rooms.remove(it) }
+            roomsToRemove.forEach {
+                println("removed room $it")
+                rooms.remove(it)
+            }
         }
     }
 
@@ -54,7 +54,7 @@ class ServerManager(port: Int) {
     }
 
     fun moveUserIntoRoom(user: User, roomId: String) {
-        userMoveQueue.add(user)
+        user.inRoom = true
         rooms[roomId]!!.addUser(user)
         user.sendToUser("request_join_room_success")
     }
