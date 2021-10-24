@@ -56,5 +56,6 @@ class ServerManager(port: Int) {
     fun moveUserIntoRoom(user: User, roomId: String) {
         userMoveQueue.add(user)
         rooms[roomId]!!.addUser(user)
+        user.sendToUser("request_join_room_success")
     }
 }

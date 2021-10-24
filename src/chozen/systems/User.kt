@@ -10,6 +10,7 @@ class User(val socket: Socket) {
 
     fun pollRoomCommands(room: Room) {
         inputStreamReader.forEachLine {
+            println("received $it")
             val parts = it.split(' ')
             when (parts[0]) {
                 "close_room" -> room.closeRoom()
@@ -23,6 +24,7 @@ class User(val socket: Socket) {
 
     fun pollCreateJoin(serverManager: ServerManager) {
         inputStreamReader.forEachLine {
+            println("received $it")
             val parts = it.split(' ')
             when (parts[0]) {
                 "request_create_room" -> serverManager.createRoom(this)
@@ -32,6 +34,7 @@ class User(val socket: Socket) {
     }
 
     fun sendToUser(message: String) {
+        println("sent $message")
         outputWriter.println(message)
     }
 }

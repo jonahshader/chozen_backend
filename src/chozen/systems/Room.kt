@@ -10,6 +10,10 @@ class Room(val id: String) {
         DONE
     }
 
+    init {
+        println("room $id created")
+    }
+
     private var state = RoomState.ROOM_OPEN // room is initially open upon creation
     private val users = mutableListOf<User>()
     private var totalVotes = 0
@@ -43,6 +47,7 @@ class Room(val id: String) {
             users.forEach {
                 it.sendToUser("close_room")
             }
+            println("room $id closed")
         }
     }
 
@@ -58,6 +63,7 @@ class Room(val id: String) {
             users.forEach {
                 it.sendToUser("add_option $option")
             }
+            println("added $option option to room $id")
         }
     }
 
@@ -71,6 +77,7 @@ class Room(val id: String) {
             users.forEach {
                 it.sendToUser("start_vote")
             }
+            println("room $id in voting mode")
         }
     }
 
@@ -85,6 +92,7 @@ class Room(val id: String) {
             }
             totalVotes++
         } else {
+            println("ERROR: room $id received invalid vote $option $yes")
             TODO("add exception here")
         }
     }
@@ -99,6 +107,7 @@ class Room(val id: String) {
     }
 
     private fun computeAndSendWinner() {
+        println("room $id computing winner")
         var bestOptionVoteCount = 0
         for (v in options) {
             if (v.value > bestOptionVoteCount) {
@@ -120,6 +129,7 @@ class Room(val id: String) {
 
         shutdown() // hopefully the messages get send before this is called
         state = RoomState.DONE
+        println("room $id $selectedBestOption won")
     }
 
     fun isDone() = state == RoomState.DONE
