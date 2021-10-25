@@ -6,13 +6,13 @@ import java.io.PrintWriter
 import java.net.Socket
 
 class User(val socket: Socket) {
-    private val inputStreamReader = socket.getInputStream()!!
+    private val inputStream = socket.getInputStream()!!
     private val bufferedReader = BufferedReader(InputStreamReader(socket.getInputStream()))
     private val outputWriter = PrintWriter(socket.getOutputStream(), true)
     var inRoom = false
 
     fun pollRoomCommands(room: Room) {
-        if (inputStreamReader.available() > 0) {
+        if (inputStream.available() > 0) {
             val line = bufferedReader.readLine()
             println("pollRoomCommands received $line")
             val parts = line.split(' ')
@@ -27,7 +27,7 @@ class User(val socket: Socket) {
     }
 
     fun pollCreateJoin(serverManager: ServerManager) {
-        if (inputStreamReader.available() > 0) {
+        if (inputStream.available() > 0) {
             val line = bufferedReader.readLine()
             println("pollCreateJoin received $line")
             val parts = line.split(' ')
