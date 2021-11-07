@@ -1,17 +1,18 @@
 package chozen.systems
 
+import chozen.systems.networking.IServer
 import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.thread
 
-class ServerManager(port: Int) {
-    private val serverSocket = ServerSocket(port)
+class ServerManager(private val serverSocket: IServer) {
     private val usersNotInRoomLock = ReentrantLock()
     private val usersNotInRoom = mutableListOf<User>()
     private val rooms = ConcurrentHashMap<String, Room>()
 
     fun start() {
+        serverSocket.start()
         // run a thread for gathering new user connections
         thread {
             while (true) {

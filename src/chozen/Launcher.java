@@ -1,10 +1,13 @@
 package chozen;
 
 import chozen.systems.ServerManager;
+import chozen.systems.networking.CustomWebSocketServer;
+
+import java.net.InetSocketAddress;
 
 public class Launcher {
     public static void main(String[] args) {
-        ServerManager sm = new ServerManager(25565);
+        ServerManager sm = new ServerManager(new CustomWebSocketServer(new InetSocketAddress(25565)));
         sm.start();
     }
 }

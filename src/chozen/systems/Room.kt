@@ -21,7 +21,7 @@ class Room(val id: String) {
 
     fun update() {
         // remove users that are disconnected
-        users.removeIf { !it.socket.isConnected }
+        users.removeIf { it.socket.isClosed() }
         users.forEach {
             it.pollRoomCommands(this)
         }
