@@ -1,7 +1,6 @@
 package chozen.systems
 
 import chozen.systems.networking.IServer
-import java.net.ServerSocket
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 import kotlin.concurrent.thread
@@ -16,7 +15,7 @@ class ServerManager(private val serverSocket: IServer) {
         // run a thread for gathering new user connections
         thread {
             while (true) {
-                val newUser = serverSocket.accept()
+                val newUser = serverSocket.acceptNewIClient()
                 usersNotInRoomLock.lock()
                 usersNotInRoom += User(newUser)
                 usersNotInRoomLock.unlock()
@@ -48,15 +47,30 @@ class ServerManager(private val serverSocket: IServer) {
         }
     }
 
+    /**
+     * creates a new room with a unique room id
+     * reply to requester "room_id <the new room's id>"
+     */
     fun createRoom(requester: User) {
         val newRoom = RoomGenerator.createRoom(rooms)
         rooms[newRoom.id] = newRoom
         requester.sendToUser("room_id ${newRoom.id}")
     }
 
+    /**
+     * attempts to move specified user into room with roomId.
+     * if this room exists, move user into room and reply "request_join_room_success"
+     * if this room does not exist, reply "request_join_room_failed"
+     */
     fun moveUserIntoRoom(user: User, roomId: String) {
         user.inRoom = true
-        rooms[roomId]!!.addUser(user)
-        user.sendToUser("request_join_room_success")
+        val room = rooms[roomId]
+        if (room == null) {
+            println("WARNING: User tried joining a room that doesn't exists!")
+            user.sendToUser("request_join_room_failed")
+        } else {
+            rooms[roomId]!!.addUser(user)
+            user.sendToUser("request_join_room_success")
+        }
     }
 }

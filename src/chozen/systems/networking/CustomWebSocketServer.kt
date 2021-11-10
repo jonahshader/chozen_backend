@@ -12,7 +12,7 @@ class CustomWebSocketServer(address: InetSocketAddress) : IServer, WebSocketServ
     private val sockets = ConcurrentHashMap<WebSocket, CustomWebSocket>()
     private val newClients = ArrayBlockingQueue<IClient>(100)
 
-    override fun accept(): IClient {
+    override fun acceptNewIClient(): IClient {
         return newClients.take()
     }
 

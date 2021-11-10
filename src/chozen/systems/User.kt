@@ -5,6 +5,9 @@ import chozen.systems.networking.IClient
 class User(val socket: IClient) {
     var inRoom = false
 
+    /**
+     * directs inner room commands to room methods
+     */
     fun pollRoomCommands(room: Room) {
         val line = socket.getMessage() ?: return
         println("pollRoomCommands received $line")
@@ -15,9 +18,13 @@ class User(val socket: IClient) {
             "start_vote" -> room.startVote()
             "input_vote" -> room.inputVote(parts[1], parts[2] == "yes")
             "force_end_vote" -> room.forceEndVote()
+            "get_options" -> room.getOptions(this)
         }
     }
 
+    /**
+     * directs outer room commands to the server manager
+     */
     fun pollCreateJoin(serverManager: ServerManager) {
         val line = socket.getMessage() ?: return
         println("pollCreateJoin received $line")
@@ -28,6 +35,9 @@ class User(val socket: IClient) {
         }
     }
 
+    /**
+     * send a message to this user
+     */
     fun sendToUser(message: String) {
         println("sent $message")
         socket.sendMessage(message)

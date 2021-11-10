@@ -5,7 +5,7 @@ import chozen.systems.networking.CustomWebSocketServer;
 
 import java.net.InetSocketAddress;
 
-public class Launcher {
+public class WebSocketLauncher {
     public static void main(String[] args) {
         ServerManager sm = new ServerManager(new CustomWebSocketServer(new InetSocketAddress(25565)));
         sm.start();

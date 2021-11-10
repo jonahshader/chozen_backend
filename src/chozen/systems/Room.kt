@@ -1,5 +1,6 @@
 package chozen.systems
 
+import chozen.config.Configuration.OPTION_RELAY_ENABLED
 import java.util.concurrent.ConcurrentHashMap
 
 class Room(val id: String) {
@@ -59,10 +60,13 @@ class Room(val id: String) {
     fun addOption(option: String) {
         if (state == RoomState.ROOM_CLOSED_ACCEPTING_OPTIONS && !options.contains(option)) {
             options[option] = 0
-            // send message to all users in room to add option
-            users.forEach {
-                it.sendToUser("add_option $option")
+            // send message to all users in room to add option (if functionality enabled)
+            if (OPTION_RELAY_ENABLED) {
+                users.forEach {
+                    it.sendToUser("add_option $option")
+                }
             }
+
             println("added $option option to room $id")
         }
     }
@@ -138,5 +142,13 @@ class Room(val id: String) {
         // close sockets
         users.forEach { it.socket.close() }
         users.clear()
+    }
+
+    /**
+     * returns "options " followed by a space delimited list of all options
+     */
+    fun getOptions(user: User) {
+        val optionsAsString = options.keys.fold("") { acc, s -> "$acc $s" }
+        user.sendToUser("options$optionsAsString")
     }
 }
