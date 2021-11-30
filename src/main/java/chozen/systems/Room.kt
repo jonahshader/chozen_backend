@@ -19,6 +19,7 @@ class Room(val id: String) {
     private val users = mutableListOf<User>()
     private var totalVotes = 0
     private val options = ConcurrentHashMap<String, Int>()
+    private var roomTopic = ""
 
     fun update() {
         // remove users that are disconnected
@@ -150,5 +151,16 @@ class Room(val id: String) {
     fun getOptions(user: User) {
         val optionsAsString = options.keys.fold("") { acc, s -> "$acc $s" }
         user.sendToUser("options$optionsAsString")
+    }
+
+    fun setTopic(topic: String) {
+        // update topic and notify all users
+        roomTopic = topic
+
+        users.forEach { getTopic(it) }
+    }
+
+    fun getTopic(user: User) {
+        user.sendToUser("topic $roomTopic")
     }
 }

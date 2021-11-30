@@ -13,6 +13,8 @@ class User(val socket: IClient) {
         println("pollRoomCommands received $line")
         val parts = line.split(' ')
         when (parts[0]) {
+            "set_topic" -> room.setTopic(parts[1])
+            "get_topic" -> room.getTopic(this)
             "close_room" -> room.closeRoom()
             "add_option" -> room.addOption(parts[1])
             "start_vote" -> room.startVote()

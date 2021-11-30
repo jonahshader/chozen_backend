@@ -52,7 +52,7 @@ class ServerManager(private val serverSocket: IServer) {
      * reply to requester "room_id <the new room's id>"
      */
     fun createRoom(requester: User) {
-        val newRoom = RoomGenerator.createRoom(rooms)
+        val newRoom = RoomGenerator.createUniqueRoom(rooms)
         rooms[newRoom.id] = newRoom
         requester.sendToUser("room_id ${newRoom.id}")
     }
@@ -66,7 +66,7 @@ class ServerManager(private val serverSocket: IServer) {
         user.inRoom = true
         val room = rooms[roomId]
         if (room == null) {
-            println("WARNING: User tried joining a room that doesn't exists!")
+            println("WARNING: User tried joining a room that doesn't exist!")
             user.sendToUser("request_join_room_failed")
         } else {
             rooms[roomId]!!.addUser(user)

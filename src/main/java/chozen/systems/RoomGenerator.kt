@@ -8,11 +8,10 @@ object RoomGenerator {
     private val roomIDLength = 5
     private val validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
 
-
     /**
      * creates a room with a unique ID
      */
-    fun createRoom(rooms: ConcurrentHashMap<String, Room>) : Room {
+    fun createUniqueRoom(rooms: ConcurrentHashMap<String, Room>) : Room {
         var newKey = generateRandomRoomID()
         while (rooms.containsKey(newKey)) {
             newKey = generateRandomRoomID()
