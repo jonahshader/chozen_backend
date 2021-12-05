@@ -4,6 +4,9 @@ import chozen.config.Configuration.OPTION_RELAY_ENABLED
 import java.util.concurrent.ConcurrentHashMap
 
 class Room(val id: String) {
+    companion object {
+        const val AUTO_COMPUTE_WINNER = false
+    }
     enum class RoomState {
         ROOM_OPEN,
         ROOM_CLOSED_ACCEPTING_OPTIONS,
@@ -20,6 +23,7 @@ class Room(val id: String) {
     private var totalVotes = 0
     private val options = ConcurrentHashMap<String, Int>()
     private var roomTopic = ""
+    private var queueComputeAndSendWinner = false
 
     fun update() {
         // remove users that are disconnected
@@ -27,8 +31,11 @@ class Room(val id: String) {
         users.forEach {
             it.pollRoomCommands(this)
         }
-        // if the state is voting and we have all the votes,
-        if (state == RoomState.VOTING && totalVotes == users.size * options.size) {
+        if (queueComputeAndSendWinner) {
+            computeAndSendWinner()
+        }
+        // else if the state is voting and we have all the votes,
+        else if (AUTO_COMPUTE_WINNER && state == RoomState.VOTING && totalVotes == users.size * options.size) {
             computeAndSendWinner()
         }
     }
@@ -107,7 +114,7 @@ class Room(val id: String) {
      */
     fun forceEndVote() {
         if (state == RoomState.VOTING) {
-            computeAndSendWinner()
+            queueComputeAndSendWinner = true
         }
     }
 
