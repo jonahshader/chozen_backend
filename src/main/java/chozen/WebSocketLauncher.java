@@ -7,7 +7,8 @@ import java.net.InetSocketAddress;
 
 public class WebSocketLauncher {
     public static void main(String[] args) {
-        ServerManager sm = new ServerManager(new CustomWebSocketServer(new InetSocketAddress(25565)));
+        ServerManager sm;
+        sm = new ServerManager(new CustomWebSocketServer(new InetSocketAddress(args.length == 1 ? Integer.parseInt(args[0]) : 25565)));
         sm.start();
     }
 }
